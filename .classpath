@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/Users/gabegoldstein/eclipse-workspace/ranProjects/jaf-1_1_1.zip"/>
+	<classpathentry kind="lib" path="/Users/gabegoldstein/eclipse-workspace/ranProjects/jar_files.zip"/>
+	<classpathentry kind="lib" path="/Users/gabegoldstein/eclipse-workspace/ranProjects/javax.mail-1.6.1 (4).jar"/>
+	<classpathentry kind="lib" path="/Users/gabegoldstein/eclipse-workspace/ranProjects/smtp-1.4.2-sources.jar.zip"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 9.0.1 [9.0.1]"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
