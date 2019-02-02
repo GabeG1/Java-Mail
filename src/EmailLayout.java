@@ -1,12 +1,12 @@
 import java.awt.Container;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.event.KeyEvent;
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
@@ -27,10 +28,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
 
-public class EmailLayout implements ActionListener, KeyListener{
+public class EmailLayout implements ActionListener, KeyListener, MouseListener {
 	JFrame emailFrame;
 	Container cp;
 	JPanel panel;
@@ -50,7 +52,7 @@ public class EmailLayout implements ActionListener, KeyListener{
 	Session session;
 	JButton sendBut;
 	JMenu timeMenu;
-	JPopupMenu popupMenu = new JPopupMenu("Set Time");
+	JPopupMenu timePopupMenu = new JPopupMenu("Set Time");
 	JMenuBar menuBar;
 	JMenuItem time;
 	JLabel l_hour;
@@ -64,15 +66,15 @@ public class EmailLayout implements ActionListener, KeyListener{
 	JComboBox<Integer> hour;
 	JButton exit;
 	int monthNum;
-	Date sendEmailTime; 
+	Date sendEmailTime;
 	boolean timeSetOpened;
 	DefaultComboBoxModel<Integer> model;
 	Integer[] hoursList = { 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, };
 	String[] monthsList = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
-	Integer[] minutesList = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-			26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
-			53, 54, 55, 56, 57, 58, 59 };
+	Integer[] minutesList = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+			25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+			52, 53, 54, 55, 56, 57, 58, 59 };
 	Integer[] daysOption1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 			26, 27, 28, 29, 30, 31 };
 	Integer[] daysOption2 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
@@ -81,7 +83,6 @@ public class EmailLayout implements ActionListener, KeyListener{
 			26, 27, 28 };
 	JComboBox<Integer> days;
 	JComboBox<String> months = new JComboBox<>(monthsList);
-	
 
 	public static void main(String[] args) {
 		EmailLayout el = new EmailLayout();
@@ -125,13 +126,14 @@ public class EmailLayout implements ActionListener, KeyListener{
 		layout.putConstraint(SpringLayout.VERTICAL_CENTER, password, 100, SpringLayout.VERTICAL_CENTER, cp);
 		loginBut = new JButton("login");
 		username.addKeyListener(this);
-	    password.addKeyListener(this);
+		password.addKeyListener(this);
 		loginBut.setFont(new Font("Serif", Font.PLAIN, 35));
 		loginBut.setPreferredSize(new Dimension(150, 50));
 		cp.add(loginBut);
 		loginBut.addActionListener(this);
 		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, loginBut, 0, SpringLayout.HORIZONTAL_CENTER, cp);
 		layout.putConstraint(SpringLayout.VERTICAL_CENTER, loginBut, 200, SpringLayout.VERTICAL_CENTER, cp);
+	System.out.println(getSession());
 	}
 
 	String getUsername() {
@@ -148,6 +150,7 @@ public class EmailLayout implements ActionListener, KeyListener{
 	}
 
 	public void emailSetup() {
+		System.out.println(getSession());
 		remove();
 		emailFrame.setVisible(true);
 		l_to = new JLabel("to: ");
@@ -160,6 +163,7 @@ public class EmailLayout implements ActionListener, KeyListener{
 		timeMenu.setPreferredSize(new Dimension(200, 50));
 		timeMenu.addActionListener(this);
 		time = new JMenuItem("Set Time");
+		time.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 		time.setPreferredSize(new Dimension(200, 50));
 		timeMenu.add(time);
 		time.addActionListener(this);
@@ -221,75 +225,77 @@ public class EmailLayout implements ActionListener, KeyListener{
 
 	public void createPopupMenu() {
 		timeSetOpened = true;
-		popupMenu.setPopupSize(new Dimension(1000, 1000));
-		popupMenu.setVisible(true);
-		time.setComponentPopupMenu(popupMenu);
+		timePopupMenu.setPopupSize(new Dimension(1000, 1000));
+		timePopupMenu.setVisible(true);
+		time.setComponentPopupMenu(timePopupMenu);
 		popupLayout = new SpringLayout();
-		popupMenu.setLayout(popupLayout);
+		timePopupMenu.setLayout(popupLayout);
 		l_hour = new JLabel("Enter Hour: ");
 		l_hour.setFont(new Font("Serif", Font.PLAIN, 35));
-		popupMenu.add(l_hour);
-		popupLayout.putConstraint(SpringLayout.WEST, l_hour, 10, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, l_hour, 20, SpringLayout.NORTH, popupMenu);
+		timePopupMenu.add(l_hour);
+		popupLayout.putConstraint(SpringLayout.WEST, l_hour, 10, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, l_hour, 20, SpringLayout.NORTH, timePopupMenu);
 		hour = new JComboBox<Integer>(hoursList);
+		hour.setPrototypeDisplayValue(15);
 		hour.setFont(new Font("Serif", Font.PLAIN, 35));
 		hour.setSize(new Dimension(150, 150));
-		popupMenu.add(hour);
+		timePopupMenu.add(hour);
 		popupLayout.putConstraint(SpringLayout.WEST, hour, 225, SpringLayout.WEST, l_hour);
-		popupLayout.putConstraint(SpringLayout.NORTH, hour, 20, SpringLayout.NORTH, popupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, hour, 20, SpringLayout.NORTH, timePopupMenu);
 		amButton = new JRadioButton("AM", true);
 		pmButton = new JRadioButton("PM", false);
 		amButton.addActionListener(this);
 		pmButton.addActionListener(this);
 		popupLayout.putConstraint(SpringLayout.WEST, amButton, 400, SpringLayout.WEST, l_hour);
-		popupLayout.putConstraint(SpringLayout.NORTH, amButton, 20, SpringLayout.NORTH, popupMenu);
-		popupMenu.add(amButton);
+		popupLayout.putConstraint(SpringLayout.NORTH, amButton, 20, SpringLayout.NORTH, timePopupMenu);
+		timePopupMenu.add(amButton);
 		popupLayout.putConstraint(SpringLayout.WEST, pmButton, 500, SpringLayout.WEST, l_hour);
-		popupLayout.putConstraint(SpringLayout.NORTH, pmButton, 20, SpringLayout.NORTH, popupMenu);
-		popupMenu.add(pmButton);
+		popupLayout.putConstraint(SpringLayout.NORTH, pmButton, 20, SpringLayout.NORTH, timePopupMenu);
+		timePopupMenu.add(pmButton);
 		amButton.setFont(new Font("Serif", Font.PLAIN, 25));
 		pmButton.setFont(new Font("Serif", Font.PLAIN, 25));
 		l_minute = new JLabel("Enter Minute: ");
 		l_minute.setFont(new Font("Serif", Font.PLAIN, 35));
-		popupMenu.add(l_minute);
-		popupLayout.putConstraint(SpringLayout.WEST, l_minute, 10, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, l_minute, 120, SpringLayout.NORTH, popupMenu);
+		timePopupMenu.add(l_minute);
+		popupLayout.putConstraint(SpringLayout.WEST, l_minute, 10, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, l_minute, 120, SpringLayout.NORTH, timePopupMenu);
 		minutes = new JComboBox<Integer>(minutesList);
 		minutes.setFont(new Font("Serif", Font.PLAIN, 35));
-		minutes.setSize(new Dimension(150, 150));
-		popupMenu.add(minutes);
+		timePopupMenu.add(minutes);
 		popupLayout.putConstraint(SpringLayout.WEST, minutes, 225, SpringLayout.WEST, l_minute);
-		popupLayout.putConstraint(SpringLayout.NORTH, minutes, 120, SpringLayout.NORTH, popupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, minutes, 120, SpringLayout.NORTH, timePopupMenu);
 		l_month = new JLabel("Month:");
-		popupLayout.putConstraint(SpringLayout.WEST, l_month, 10, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, l_month, 220, SpringLayout.NORTH, popupMenu);
+		popupLayout.putConstraint(SpringLayout.WEST, l_month, 10, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, l_month, 220, SpringLayout.NORTH, timePopupMenu);
 		months.setSize(new Dimension(200, 50));
 		l_month.setFont(new Font("Serif", Font.PLAIN, 35));
 		months.setFont(new Font("Serif", Font.PLAIN, 35));
 		months.addActionListener(this);
-		popupMenu.add(l_month);
-		popupMenu.add(months);
-		popupLayout.putConstraint(SpringLayout.WEST, months, 225, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, months, 220, SpringLayout.NORTH, popupMenu);
+		timePopupMenu.add(l_month);
+		timePopupMenu.add(months);
+		popupLayout.putConstraint(SpringLayout.WEST, months, 225, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, months, 220, SpringLayout.NORTH, timePopupMenu);
 		days = new JComboBox<>(daysOption1);
 		l_day = new JLabel("Day");
 		l_day.setSize(new Dimension(200, 200));
 		l_day.setFont(new Font("Serif", Font.PLAIN, 35));
-		days.setFont(new Font("Serif", Font.PLAIN, 35));
-		days.setSize(new Dimension(150, 200));
-		popupMenu.add(l_day);
-		popupMenu.add(days);
+		days.setFont(new Font("Serif", Font.PLAIN, 30));
+		timePopupMenu.add(l_day);
+		timePopupMenu.add(days);
 		exit = new JButton("Exit");
 		exit.setFont(new Font("Serif", Font.PLAIN, 35));
 		exit.addActionListener(this);
-		popupMenu.add(exit);
+		timePopupMenu.addMouseListener(this);
+		timePopupMenu.add(exit);
+
+		emailFrame.addKeyListener(this);
 		exit.setSize(new Dimension(150, 100));
-		popupLayout.putConstraint(SpringLayout.EAST, exit, 900, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, exit, 20, SpringLayout.NORTH, popupMenu);
-		popupLayout.putConstraint(SpringLayout.WEST, l_day, 10, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, l_day, 320, SpringLayout.NORTH, popupMenu);
-		popupLayout.putConstraint(SpringLayout.WEST, days, 225, SpringLayout.WEST, popupMenu);
-		popupLayout.putConstraint(SpringLayout.NORTH, days, 320, SpringLayout.NORTH, popupMenu);
+		popupLayout.putConstraint(SpringLayout.EAST, exit, 900, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, exit, 20, SpringLayout.NORTH, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.WEST, l_day, 10, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, l_day, 320, SpringLayout.NORTH, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.WEST, days, 225, SpringLayout.WEST, timePopupMenu);
+		popupLayout.putConstraint(SpringLayout.NORTH, days, 320, SpringLayout.NORTH, timePopupMenu);
 	}
 
 	public String getDate() {
@@ -368,31 +374,33 @@ public class EmailLayout implements ActionListener, KeyListener{
 	public void runTask() {
 		Timer time = new Timer();
 		time.schedule(new GoogleMail(getUsername(), getPassword(), getSession(), getRecipient(), getSubject(),
-				getMessage(), findTime(), getCurrentTime()), sendEmailTime);
+				getMessage(), findTime()), sendEmailTime);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		//System.out.println(e.getActionCommand());
+		// System.out.println(e.getActionCommand());
 		if (e.getActionCommand() == loginBut.getActionCommand()) {
-			emailSetup();
+			if (getSession() == null) {
+				JOptionPane.showMessageDialog(null, "Incorrect Username or password", "Unable to Login",
+						JOptionPane.ERROR_MESSAGE);
+				loginsetup();
+			} else {
+				emailSetup();
+			}
 		}
-		if (e.getActionCommand().equals("Set Time"))
-		{
-			if(timeSetOpened == true)
-			{
-				popupMenu.setVisible(true);
+		if (e.getActionCommand().equals("Set Time")) {
+			if (timeSetOpened == true) {
+				timePopupMenu.setVisible(true);
+			} else {
+				createPopupMenu();
 			}
-			else
-			{
-			createPopupMenu();
-			}
-		} 
+		}
 		if (e.getActionCommand().equals("AM")) {
 			pmButton.setSelected(false);
-		} 
+		}
 		if (e.getActionCommand().equals("PM")) {
 			amButton.setSelected(false);
-		} 
+		}
 		if (e.getActionCommand().equals("Send")) {
 			getSession();
 			runTask();
@@ -401,7 +409,7 @@ public class EmailLayout implements ActionListener, KeyListener{
 			System.out.println(findTime().getTime());
 			System.out.println(getCurrentTime().getTime());
 			sendEmailTime = findTime().getTime();
-			popupMenu.setVisible(false);
+			timePopupMenu.setVisible(false);
 		}
 
 		if (e.getActionCommand().equals("comboBoxChanged")) {
@@ -409,7 +417,7 @@ public class EmailLayout implements ActionListener, KeyListener{
 					|| months.getSelectedItem().equals("May") || months.getSelectedItem().equals("July")
 					|| months.getSelectedItem().equals("August") || months.getSelectedItem().equals("October")
 					|| months.getSelectedItem().equals("December")) {
-				int dayTemp=days.getSelectedIndex();
+				int dayTemp = days.getSelectedIndex();
 				model = new DefaultComboBoxModel<Integer>(daysOption1);
 				days.setModel(model);
 				days.setSelectedIndex(dayTemp);
@@ -417,13 +425,13 @@ public class EmailLayout implements ActionListener, KeyListener{
 			}
 			if (months.getSelectedItem().equals("April") || months.getSelectedItem().equals("June")
 					|| months.getSelectedItem().equals("September") || months.getSelectedItem().equals("November")) {
-				int dayTemp=days.getSelectedIndex();
+				int dayTemp = days.getSelectedIndex();
 				model = new DefaultComboBoxModel<Integer>(daysOption2);
 				days.setModel(model);
 				days.setSelectedIndex(dayTemp);
 			}
 			if ((months.getSelectedItem().equals("February"))) {
-				int dayTemp=days.getSelectedIndex();
+				int dayTemp = days.getSelectedIndex();
 				model = new DefaultComboBoxModel<Integer>(daysOption3);
 				days.setModel(model);
 				days.setSelectedIndex(dayTemp);
@@ -436,21 +444,60 @@ public class EmailLayout implements ActionListener, KeyListener{
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
-		{
-			emailSetup();
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (getSession() == null) {
+				JOptionPane.showMessageDialog(null, "Incorrect Username or password", "Unable to Login",
+						JOptionPane.ERROR_MESSAGE);
+				loginsetup();
+			} else {
+				emailSetup();
+			}
 		}
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.getButton() == 1 || e.getButton() == 2 || e.getButton() == 3) {
+			days.hidePopup();
+			minutes.hidePopup();
+			months.hidePopup();
+			hour.hidePopup();
+		}
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }

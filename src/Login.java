@@ -22,8 +22,18 @@ public class Login {
    props.setProperty("mail.smtps.auth", "true");
    props.put("mail.smtps.quitwait", "false");
   } */
+   Session session = null;
+   try
+   {
   MailAuthenticator ma = new MailAuthenticator(username, password);
-  Session session = Session.getDefaultInstance(props, ma);
+  System.out.println(ma);
+  session = Session.getDefaultInstance(props, ma);
+   }
+   catch(Exception E)
+   {
+	   return null;
+   }
+   
   return session;
  }
-}
+ }
